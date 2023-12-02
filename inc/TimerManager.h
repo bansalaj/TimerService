@@ -8,8 +8,9 @@ public:
     TimerManager();
     ~TimerManager();
 
-    void addTimer(const Timer& timer);
-    void removeTimer(const Timer& timer);
+    int addTimer(std::function<void()> callback, unsigned long long time_ms,
+                    bool periodic);
+    void removeTimer(const int& id);
 
 private:
     std::set<std::pair<std::chrono::steady_clock::time_point, int>> timerQueue;
@@ -20,6 +21,7 @@ private:
     bool active;
 
     void mgmtFunction();
+    int generateUniqueId();
 
 };
 

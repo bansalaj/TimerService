@@ -13,7 +13,7 @@ TimerManager::TimerManager() : active(true) {
 */
 TimerManager::~TimerManager() {
     active = false;
-    cv.notify_all();
+    cv.notify_one();
     if (mgmtThread.joinable()) {
         mgmtThread.join();
     }
@@ -23,24 +23,50 @@ TimerManager::~TimerManager() {
  * addTimer
  *  Adds Timer object to the queue
 */
-void TimerManager::addTimer(const Timer& timer) {
+int
+TimerManager::addTimer(std::function<void()> callback, unsigned long long time_ms,
+                            bool periodic) {
     std::lock_guard<std::mutex> lock(mtx);
     // Add the timer to the queue
+    int id = generateUniqueId();
+    auto result = timers.emplace(std::piecewise_construct,
+                                std::forward_as_tuple(id),
+                                std::forward_as_tuple(callback, time_ms, periodic)
+                                );
+
+    timerQueue.emplace(result.first->second.getNextExecutionTime(), id);
 
     cv.notify_one(); // Wake up the management thread if it is waiting
+    return id;
 }
 
 /**
  * removeTimer
  *  removes Timer object from the queue
 */
-void TimerManager::removeTimer(const Timer& timer) {
+void
+TimerManager::removeTimer(const int &timerId) {
     std::lock_guard<std::mutex> lock(mtx);
+    auto it = timers.find(timerId);
+    if (it != timers.end()) {
+        // Remove the timers from the map of iterators
+        timers.erase(it);
 
+        // Also remove the time from the queue if it's there
+        for (auto queueIt = timerQueue.begin(); queueIt != timerQueue.end(); ++queueIt) {
+            if (queueIt->second == timerId) {
+                timerQueue.erase(queueIt);
+                break; // Exit the loop once the timer is found and removed
+            }
+        }
+    }
+
+    // notify the management function in case it's waiting for the next timer
     cv.notify_one();
 }
 
-void TimerManager::mgmtFunction() {
+void
+TimerManager::mgmtFunction() {
     std::unique_lock<std::mutex> lock(mtx, std::defer_lock);
 
     while (active) {
@@ -49,20 +75,27 @@ void TimerManager::mgmtFunction() {
         auto now = std::chrono::steady_clock::now();
         while(!timerQueue.empty() && timerQueue.begin()->first <= now) {
             int id = timerQueue.begin()->second;
-            auto& timer = timers[id];
+            timerQueue.erase(timerQueue.begin()); // Remove the current timer from the queue
 
-            // Asynchronous execution of the callback
-            std::thread callbackThread(&Timer::executeCallback, &timer);
-            callbackThread.detach();
+            auto timerIt = timers.find(id);
+            if (timerIt != timers.end()) {
+                auto& timer = timerIt->second;
 
-            if (timer.isPeriodic()) {
-                // update the timer's next execution time
-                timer.reschedule();
-                timerQueue.emplace(timer.getNextExecutionTime(), id);
+                // Asynchronous execution of the callback
+                std::thread callbackThread(&Timer::executeCallback, &timer);
+                callbackThread.detach();
+
+                if (timer.isPeriodic()) {
+                    // update the timer's next execution time
+                    timer.reschedule();
+                    timerQueue.emplace(timer.getNextExecutionTime(), id);
+                } else {
+                    timers.erase(timerIt);
+                }
             } else {
-                timers.erase(id);
+                // Timer not found, remove it from queue
+                timerQueue.erase(timerQueue.begin());
             }
-
         }
 
         if (!timerQueue.empty()) {
@@ -76,4 +109,15 @@ void TimerManager::mgmtFunction() {
 
         lock.unlock(); // unlock the mutex
     }
+}
+
+
+/**
+ * generateUniqueId
+ *  generates unique Id
+*/
+int
+TimerManager::generateUniqueId() {
+    static int id = 0;
+    return ++id;
 }
