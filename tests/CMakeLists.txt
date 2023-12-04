@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 enable_testing()
 
 # Add the Google Test submodule
-add_subdirectory(googletest)
+add_subdirectory(../googletest googletest)
 
 # Include Google Test and TimerService include directories
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
