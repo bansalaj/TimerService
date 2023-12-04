@@ -37,8 +37,24 @@ int main() {
     timerManager.addTimer(printPeriodicMessage, 3000, true); // Every 3 seconds
 
     timerManager.addTimer([](){
-        std::cout << "<======One Shot Message callback Executed=======>" << std::endl;
+        std::cout << getCurrentTime() << " <====2nd Periodic callback======>" << std::endl;
+    }, 4000, true);
+
+    timerManager.addTimer([](){
+        std::cout << getCurrentTime() << " <======One Shot Message callback Executed=======>" << std::endl;
     }, 5000, false); // After 5 seconds
+
+    timerManager.addTimer([](){
+        std::cout << getCurrentTime() << " <======One Shot Message callback Executed=======>" << std::endl;
+    }, 10000, false); // After 5 seconds
+
+    timerManager.addTimer([](){
+        std::cout << getCurrentTime() << " <======One Shot Message callback Executed=======>" << std::endl;
+    }, 15000, false); // After 5 seconds
+
+    timerManager.addTimer([](){
+        std::cout << getCurrentTime() << " <======One Shot Message callback Executed=======>" << std::endl;
+    }, 20000, false); // After 5 seconds
 
 
     // Keep the main thread alive for a while to observe the timers
