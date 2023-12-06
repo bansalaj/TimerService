@@ -26,11 +26,16 @@ To build the TimerService library, you will need CMake and a C++ compiler.
    ```bash
    cd TimerService
    ```
-3. Create a build directory:
+4. Update Submodule (GoogleTest)
+   ```bash
+   git submodule init
+   git submodule update
+   ```
+4. Create a build directory:
    ```bash
    mkdir build && cd build
    ```
-4. Run CMake and build the project:
+5. Run CMake and build the project:
    ```bash
    cmake ..
    make
