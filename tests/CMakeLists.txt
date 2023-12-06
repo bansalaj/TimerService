@@ -23,7 +23,9 @@ file(GLOB LIB_SOURCES "../src/*.cpp")
 add_executable(runUnitTests TimerServiceTests.cpp ${LIB_SOURCES})
 
 # Link against Google Test and the pthread library
-target_link_libraries(runUnitTests gtest gtest_main pthread)
+if (UNIX)
+    target_link_libraries(runUnitTests gtest gtest_main pthread)
+endif()
 
 # Add the tests to be run
 add_test(NAME TimerServiceTests COMMAND runUnitTests)
