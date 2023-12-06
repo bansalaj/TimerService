@@ -41,29 +41,8 @@ To build the TimerService library, you will need CMake and a C++ compiler.
    make
    ```
 
-This will compile the TimerService library and place the output in the `build` directory.
+This will compile the TimerService library, example and test binaries and place the output in the `build\bin` directory.
 
-## Building and Running the Example
-
-The TimerService library comes with an example application demonstrating its usage.
-
-1. Navigate to the example directory inside the project:
-   ```bash
-   cd path/to/TimerService/example
-   ```
-2. Create and navigate to the build directory:
-   ```bash
-   mkdir build && cd build
-   ```
-3. Run CMake and make to build the example:
-   ```bash
-   cmake ..
-   make
-   ```
-4. Run the example application:
-   ```bash
-   ./timer_example
-   ```
 
 The example application will show the TimerService library in action, creating and managing both one-shot and periodic timers.
 

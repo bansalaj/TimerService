@@ -1,12 +1,15 @@
 cmake_minimum_required(VERSION 3.10)
-project(TimerService)
+project(TimerServiceSolution)
 
-# Specify the c++ standard
+# Specify the C++ standard
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Include directories for header files
-include_directories(inc)
-
-# Add the source directory
+# Include the main library source
 add_subdirectory(src)
+
+# Include the example application
+add_subdirectory(example)
+
+# Include the tests
+add_subdirectory(tests)

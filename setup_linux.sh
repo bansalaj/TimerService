@@ -8,16 +8,16 @@ echo "Initializing and updating Google Test submodule ...."
 git submodule init
 git submodule update
 
-# create a build directory and navigate into it
 echo "Creating build directory..."
 mkdir -p build
 cd build
 
-# Run CMake and build the project
+echo "Generating Makefiles with CMake..."
 cmake ..
+
+echo "Building the project..."
 make
 
-# Navigate back the root dir
-cd ..
+echo "Binaries can be found in build/bin"
 
 echo "Setup completed successfully."
