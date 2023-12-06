@@ -12,6 +12,8 @@ public:
                     bool periodic);
     void removeTimer(const int& id);
 
+    int getTimersCount();
+
 private:
     std::set<std::pair<std::chrono::steady_clock::time_point, int>> timerQueue;
     std::unordered_map<int, Timer> timers;

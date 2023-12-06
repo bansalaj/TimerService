@@ -65,6 +65,13 @@ TimerManager::removeTimer(const int &timerId) {
     cv.notify_one();
 }
 
+
+int
+TimerManager::getTimersCount() {
+    std::lock_guard<std::mutex> lock(mtx);
+    return timers.size();
+}
+
 void
 TimerManager::mgmtFunction() {
     std::unique_lock<std::mutex> lock(mtx, std::defer_lock);
