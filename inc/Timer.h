@@ -1,6 +1,8 @@
 #ifndef TIMER_H__
 #define TIMER_H__
 
+#pragma once
+
 #include <functional>
 #include <chrono>
 #include <thread>

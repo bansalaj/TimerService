@@ -4,7 +4,7 @@
 /**
  * Constructor
 */
-TimerManager::TimerManager() : active(true) {
+TimerManager::TimerManager(size_t numOfThreads) : threadPool(numOfThreads) ,active(true) {
     mgmtThread = std::thread(&TimerManager::mgmtFunction, this);
 }
 
@@ -89,8 +89,10 @@ TimerManager::mgmtFunction() {
                 auto& timer = timerIt->second;
 
                 // Asynchronous execution of the callback
-                std::thread callbackThread(&Timer::executeCallback, &timer);
-                callbackThread.detach();
+                threadPool.enqueue([&timer] {
+                    //auto& timer = timerIt->second;
+                    timer.executeCallback();
+                });
 
                 if (timer.isPeriodic()) {
                     // update the timer's next execution time

@@ -1,11 +1,11 @@
-#ifndef TIMERMANAGER_H__
-#define TIMERMANAGER_H__
+#pragma once
 
 #include "Timer.h"
+#include "ThreadPool.h"
 
 class TimerManager {
 public:
-    TimerManager();
+    TimerManager(size_t numberOfthreads = 4);
     ~TimerManager();
 
     int addTimer(std::function<void()> callback, unsigned long long time_ms,
@@ -21,10 +21,9 @@ private:
     std::condition_variable cv;
     std::thread mgmtThread;
     bool active;
+    ThreadPool threadPool;
 
     void mgmtFunction();
     int generateUniqueId();
 
 };
-
-#endif

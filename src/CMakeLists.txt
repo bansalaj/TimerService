@@ -1,6 +1,7 @@
 # Collect source files
 set(SOURCE_FILES
     Timer.cpp
+    ThreadPool.cpp
     TimerManager.cpp
 )
 
